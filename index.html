@@ -101,7 +101,51 @@
             header, footer, main, .no-print { display: none !important; }
             #print-area { display: block !important; width: 100%; box-sizing: border-box; }
             .print-page { page-break-after: always; break-after: page; }
-            .print-page:last-child { page-break-after: auto; break-after: auto; }
+            .print-pack {
+                page-break-before: always;
+                break-before: page;
+            }
+            .print-pack-head {
+                display: flex; justify-content: space-between; align-items: flex-end;
+                border-bottom: 2px solid var(--tm); padding-bottom: 8px; margin-bottom: 12px;
+            }
+            .print-pack-head img { height: 28px; }
+            .print-pack-head .doc-info { text-align: right; font-size: 10px; color: #475569; line-height: 1.45; }
+            .print-pack-title { text-align: center; margin: 0 0 12px; color: #0f172a; }
+            .print-pack-title strong { display: block; font-size: 18px; letter-spacing: -0.02em; }
+            .print-pack-title span { display: block; margin-top: 4px; font-size: 11px; color: #475569; font-weight: 500; }
+            .print-pack-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+            .print-pack-card {
+                border: 1px solid #1e293b; border-radius: 6px; padding: 8px 10px 6px;
+                page-break-inside: avoid;
+            }
+            .print-pack-card h3 {
+                margin: 0 0 6px; font-size: 12px; color: var(--tm);
+                border-bottom: 1px solid #cbd5e1; padding-bottom: 4px;
+            }
+            .print-pack-card ul { list-style: none; margin: 0; padding: 0; }
+            .print-pack-card li {
+                position: relative; padding-left: 12px; margin-bottom: 3px;
+                font-size: 11px; line-height: 1.45; color: #1e293b; word-break: keep-all;
+            }
+            .print-pack-card li::before {
+                content: '■'; font-size: 7px; position: absolute; left: 0; top: 4px; color: var(--tm);
+            }
+            .print-qr {
+                display: flex; align-items: center; gap: 16px;
+                border: 2px solid var(--tm); border-radius: 8px; padding: 10px 14px;
+                page-break-inside: avoid;
+            }
+            .print-qr img { width: 32mm; height: 32mm; object-fit: contain; background: #fff; }
+            .print-qr h3 { margin: 0 0 4px; font-size: 15px; color: var(--tm); }
+            .print-qr p { margin: 0; font-size: 12px; line-height: 1.5; color: #1e293b; }
+            .print-qr .qr-url { margin-top: 6px; font-size: 11px; color: var(--tm); font-weight: 700; word-break: break-all; }
+            .print-pack-footer {
+                display: flex; justify-content: space-between; align-items: center;
+                margin-top: 14px; padding-top: 8px; border-top: 1px solid #cbd5e1;
+                font-size: 10px; color: #64748b;
+            }
+            .print-pack-footer .manager { font-weight: 700; color: #0f172a; }
             .print-header-top { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid var(--tm); padding-bottom: 8px; margin-bottom: 12px; }
             .print-header-top img { height: 28px; }
             .print-header-top.print-header-compact { margin-bottom: 10px; padding-bottom: 6px; }
@@ -121,6 +165,7 @@
             .tm-col-meal { width: 14%; text-align: center; vertical-align: middle; }
             .tm-day-divider td { border-top: 1.5px solid #1e293b !important; }
             .tm-day-label { display: block; font-size: 9px; color: #64748b; font-weight: 600; margin-top: 2px; }
+            .tm-day-route { display: block; font-size: 8.5px; color: #334155; font-weight: 700; margin-top: 2px; line-height: 1.3; word-break: keep-all; }
             .tm-desc-list { list-style: none; margin: 3px 0 !important; padding-left: 0; }
             .tm-desc-list li { position: relative; padding-left: 11px; margin-bottom: 4px !important; }
             .tm-desc-list li::before { content: '■'; font-size: 7px; position: absolute; left: 0; top: 4px; color: var(--tm); }
@@ -139,7 +184,7 @@
 </head>
 <body class="antialiased bg-slate-50">
 
-    <!-- A4 전체 일정표 인쇄 (14일 · 2페이지) -->
+    <!-- A4 전체 일정표 인쇄 (14일 · 3페이지: 일정 1~2 + 준비물·QR) -->
     <div id="print-area">
 
         <!-- 1페이지: 1~8일차 -->
@@ -167,7 +212,7 @@
                 </thead>
                 <tbody>
                     <tr class="tm-day-divider">
-                        <td class="tm-col-date">1일차<span class="tm-day-label">11/14(토)</span>인천→</td>
+                        <td class="tm-col-date">1일차<span class="tm-day-label">11/14(토)</span><span class="tm-day-route">인천→</span></td>
                         <td class="tm-col-desc">
                             <ul class="tm-desc-list">
                                 <li><strong>21:30</strong> 인천국제공항 출발 · 아시아나 <strong>OZ707</strong></li>
@@ -177,7 +222,7 @@
                         <td class="tm-col-meal"><div class="tm-meal-wrapper"><div class="tm-meal-simple"><strong>조</strong> —</div><div class="tm-meal-simple"><strong>중</strong> —</div><div class="tm-meal-simple"><strong>석</strong> 기내</div></div><div class="tm-meal-simple tm-meal-lodge"><strong>宿</strong> 기내</div></td>
                     </tr>
                     <tr class="tm-day-divider">
-                        <td class="tm-col-date">2일차<span class="tm-day-label">11/15(일)</span>클락→바기오</td>
+                        <td class="tm-col-date">2일차<span class="tm-day-label">11/15(일)</span><span class="tm-day-route">클락→바기오</span></td>
                         <td class="tm-col-desc">
                             <ul class="tm-desc-list">
                                 <li><strong>00:30</strong> 클락공항 도착 · 입국 수속 (<strong>OZ707</strong>)</li>
@@ -227,7 +272,7 @@
                     </tr>
                 </tbody>
             </table>
-            <p class="print-page-num">1 / 2</p>
+            <p class="print-page-num">1 / 3</p>
         </div>
 
         <!-- 2페이지: 9~14일차 + 연락망 -->
@@ -266,12 +311,12 @@
                         <td class="tm-col-meal"><div class="tm-meal-wrapper"><div class="tm-meal-simple"><strong>조</strong> 캠퍼스</div><div class="tm-meal-simple"><strong>중</strong> 캠퍼스</div><div class="tm-meal-simple"><strong>석</strong> 캠퍼스</div></div><div class="tm-meal-simple tm-meal-lodge"><strong>宿</strong> JIC</div></td>
                     </tr>
                     <tr class="tm-day-divider">
-                        <td class="tm-col-date">13일차<span class="tm-day-label">11/26(목)</span></td>
+                        <td class="tm-col-date">13일차<span class="tm-day-label">11/26(목)</span><span class="tm-day-route">마지막<br>평일수업</span></td>
                         <td class="tm-col-desc"><ul class="tm-desc-list"><li>캠프 커리큘럼 정규 수업 (마지막 평일)</li><li>2주차 학습 마무리 · 귀국 준비</li></ul></td>
                         <td class="tm-col-meal"><div class="tm-meal-wrapper"><div class="tm-meal-simple"><strong>조</strong> 캠퍼스</div><div class="tm-meal-simple"><strong>중</strong> 캠퍼스</div><div class="tm-meal-simple"><strong>석</strong> 캠퍼스</div></div><div class="tm-meal-simple tm-meal-lodge"><strong>宿</strong> JIC</div></td>
                     </tr>
                     <tr class="tm-day-divider">
-                        <td class="tm-col-date">14일차<span class="tm-day-label">11/27(금)~11/28(토)</span></td>
+                        <td class="tm-col-date">14일차<span class="tm-day-label">11/27(금)</span><span class="tm-day-route">~11/28(토)<br>귀국</span></td>
                         <td class="tm-col-desc">
                             <ul class="tm-desc-list">
                                 <li><strong>11/27(금)</strong> 오전 짐 정리 · 오후 JIC 졸업식</li>
@@ -292,7 +337,70 @@
             </div>
             <p class="print-page-note">주말 식사: 09:00~12:00 브런치(2회) · 주말 저녁 도시락 · 평일 3식 캠퍼스 제공 · 교외 액티비티 2회·현지학교 방문 2회 — JIC와 일정 조율 중</p>
             <div class="print-credit">[System Powered by TOURMAKER] indadady.github.io/261114_Philippines · 본 일정표는 안내 초안입니다.</div>
-            <p class="print-page-num">2 / 2</p>
+            <p class="print-page-num">2 / 3</p>
+        </div>
+
+        <!-- 3페이지: 출발전 준비물 + 스마트가이드북 QR -->
+        <div class="print-pack">
+            <div class="print-pack-head">
+                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgHfgIX70O5k6Anuo0UgALIdaG9jSga9auHu3uyz0uEirylGPAJnjN_qQbvEGMUvPqUQf_g9FMNUHRxlDcUBf4vZ3Mpy4TnA9WxbmzWYK11gt2zuy_Irl4wctNFjcjLyPo0GPXV792o_J7L9guRMuDfeC1gy7USwywjYbECZgzcsHybuGRRAXAnO1eNmP8/s320/logo.png" alt="Tourmaker">
+                <div class="doc-info">통리초 필리핀 바기오 어학연수<br>인쇄 일정표 3페이지</div>
+            </div>
+            <h2 class="print-pack-title">
+                <strong>해외여행 준비물</strong>
+                <span>출국 전에 체크해 주세요. 같은 목록은 스마트 가이드북에서도 확인할 수 있습니다.</span>
+            </h2>
+            <div class="print-pack-grid">
+                <div class="print-pack-card">
+                    <h3>서류 · 출국</h3>
+                    <ul>
+                        <li>여권 (유효기간 6개월 이상)</li>
+                        <li>E-티켓 (왕복 항공권)</li>
+                        <li>필리핀 eTravel 전자입국신고 사전 작성</li>
+                        <li>여행자 보험 영문 증서</li>
+                        <li>개인 용돈 (달러/페소) · 카드</li>
+                    </ul>
+                </div>
+                <div class="print-pack-card">
+                    <h3>의류 · 건강</h3>
+                    <ul>
+                        <li>여름 옷 (반팔, 반바지) 넉넉히</li>
+                        <li>얇은 긴팔 · 가디건 · 바람막이 (바기오 필수)</li>
+                        <li>래쉬가드 (교외 물놀이 액티비티용)</li>
+                        <li>편안한 운동화 및 실내용 슬리퍼</li>
+                        <li>선크림 · 선글라스 · 모자</li>
+                        <li>개인 세면도구 · 상비약</li>
+                    </ul>
+                </div>
+                <div class="print-pack-card">
+                    <h3>전자기기</h3>
+                    <ul>
+                        <li>스마트폰 충전기 · 보조배터리</li>
+                        <li>콘센트 어댑터 (필리핀 220V · Type A/B/C)</li>
+                    </ul>
+                </div>
+                <div class="print-pack-card">
+                    <h3>이번 일정</h3>
+                    <ul>
+                        <li>필기구 및 영어 일기장</li>
+                        <li>학교·보호자 비상연락처 메모</li>
+                        <li>기숙사 생활용품 (필요 시)</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="print-qr">
+                <img src="assets/images/guidebook-qr.png" alt="스마트 가이드북 QR코드">
+                <div>
+                    <h3>스마트 가이드북</h3>
+                    <p>스마트폰으로 스캔하면 일정, 준비물, 비상연락망을 바로 열 수 있습니다.</p>
+                    <p class="qr-url">https://indadady.github.io/261114_Philippines/</p>
+                </div>
+            </div>
+            <div class="print-pack-footer">
+                <span>[System Powered by TOURMAKER]</span>
+                <span class="manager">총괄 이재명 010-9443-7881 · 실무 조혁 010-4249-4026</span>
+            </div>
+            <p class="print-page-num">3 / 3</p>
         </div>
     </div>
 
@@ -768,6 +876,11 @@
     </footer>
 
     <script>
+        const PRINT_FILENAME = '261114_필리핀_일정표';
+        const PAGE_TITLE = document.title;
+        window.addEventListener('beforeprint', () => { document.title = PRINT_FILENAME; });
+        window.addEventListener('afterprint', () => { document.title = PAGE_TITLE; });
+
         const jicSchedule = {
             title: "바기오 JIC — 캠프 커리큘럼 일과 (예시)",
             rows: [
@@ -858,8 +971,9 @@
             const checklistItems = [
                 { id: 'passport', text: '여권 (유효기간 6개월 이상)' },
                 { id: 'eticket', text: 'E-티켓 (왕복 항공권)' },
+                { id: 'etravel', text: '필리핀 eTravel 전자입국신고 사전 작성' },
                 { id: 'insurance', text: '여행자 보험 영문 증서' },
-                { id: 'money', text: '개인 용돈 (달러/페소)' },
+                { id: 'money', text: '개인 용돈 (달러/페소) · 카드' },
                 { id: 'clothes', text: '여름 옷 (반팔, 반바지) 넉넉히' },
                 { id: 'jacket', text: '⭐️ 얇은 긴팔, 가디건, 바람막이 (바기오 필수)' },
                 { id: 'rashguard', text: '⭐️ 래쉬가드 (교외 물놀이 액티비티용)' },
@@ -867,7 +981,10 @@
                 { id: 'sunscreen', text: '⭐️ 선크림, 선글라스, 모자 (물놀이·야외 필수)' },
                 { id: 'toiletries', text: '개인 세면도구 (칫솔, 치약)' },
                 { id: 'meds', text: '개인 상비약 (멀미약, 소화제, 감기약)' },
-                { id: 'study', text: '필기구 및 영어 일기장' }
+                { id: 'charger', text: '스마트폰 충전기 · 보조배터리' },
+                { id: 'adapter', text: '콘센트 어댑터 (필리핀 220V · Type A/B/C)' },
+                { id: 'study', text: '필기구 및 영어 일기장' },
+                { id: 'contacts', text: '학교·보호자 비상연락처 메모' }
             ];
 
             checklistItems.forEach(item => {
