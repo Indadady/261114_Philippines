@@ -9,3 +9,4 @@
 | campus-dorm.jpg | JIC Green Valley brochure 2023 | Baguio JIC 공식 자료 |
 | campus-leisure.jpg | JIC Green Valley brochure 2023 | Baguio JIC 공식 자료 |
 | campus-facilities.jpg | JIC Green Valley brochure 2023 | Baguio JIC 공식 자료 |
+| oz707-seatmap.jpg | 아시아나 사전좌석배정 화면 (담당자 공유) | 가는 편 OZ707 투어메이커 사전 배정 안내용 |
