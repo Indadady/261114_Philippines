@@ -186,7 +186,32 @@
         }
     </style>
 </head>
-<body class="antialiased bg-slate-50">
+<body class="antialiased bg-slate-50 tm-secure-select">
+
+    <div id="guidebook-lock-modal" class="fixed inset-0 z-[999] hidden items-center justify-center bg-slate-900/90 backdrop-blur-md px-4 no-print" role="dialog" aria-modal="true" aria-labelledby="guidebook-lock-title">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-6 md:p-8 shadow-2xl text-center border border-slate-100">
+            <div class="w-16 h-16 bg-blue-50 text-[#004098] rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 shadow-sm">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <h3 id="guidebook-lock-title" class="text-xl font-bold text-slate-800 mb-1">보안 접속 인증</h3>
+            <p class="text-xs text-slate-500 mb-6 leading-relaxed">
+                본 가이드북은 지적재산·무단복제 방지를 위해<br>
+                출발 2주 전~행사 종료일만 자동 개방됩니다.<br>
+                그 전·이후에는 비밀번호 인증이 필요합니다.<br>
+                <span class="text-xs font-bold text-[#004098] mt-1 block">💡 힌트: 출발일 MM월DD일 → MMDD (예: 01월01일 → 0101)</span>
+            </p>
+            <div class="space-y-3">
+                <input type="password" id="lock-password-input" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="비밀번호 4자리 입력" class="w-full text-center tracking-widest text-lg font-bold border-2 border-slate-200 focus:border-[#004098] rounded-2xl px-4 py-3 outline-none transition" aria-label="비밀번호 4자리">
+                <button type="button" onclick="verifyGuidebookPassword()" class="w-full bg-[#004098] hover:bg-[#002d6b] text-white font-bold py-3.5 rounded-2xl shadow-md transition text-sm">
+                    가이드북 입장하기
+                </button>
+            </div>
+            <p id="lock-error-msg" class="text-xs text-rose-600 font-bold mt-3 hidden">비밀번호가 일치하지 않습니다.</p>
+            <div class="mt-6 pt-4 border-t border-slate-100 text-[10px] text-slate-400">
+                [System Powered by TOURMAKER] 지적재산권 보호 구역
+            </div>
+        </div>
+    </div>
 
     <!-- A4 전체 일정표 인쇄 (14일 · 3페이지: 일정 1~2 + 준비물·QR) -->
     <div id="print-area">
@@ -1340,8 +1365,13 @@
         (function initSmartSecurityLock() {
             const VALID_PASSWORDS = ["1114"];
             const EVENT_START_DATE = EVENT_START;
+            const EVENT_END_DATE = EVENT_END;
             const UNLOCK_DAYS_BEFORE = 14;
-            const STORAGE_KEY = "tm_unlocked_" + EVENT_START_DATE;
+            function unlockStorageKey(today) {
+                // 행사 종료 후에는 별도 키 — 행사 중 해제 기록이 종료 후까지 남지 않게 함(무단복제 방지)
+                if (today > EVENT_END_DATE) return "tm_unlocked_after_" + EVENT_END_DATE;
+                return "tm_unlocked_" + EVENT_START_DATE;
+            }
             function setLockVisible(on) {
                 const modal = document.getElementById("guidebook-lock-modal");
                 if (!modal) return;
@@ -1351,10 +1381,15 @@
                 document.body.style.overflow = on ? "hidden" : "";
             }
             function shouldRequirePassword() {
-                return ymdDiffDays(EVENT_START_DATE, getGuidebookToday()) > UNLOCK_DAYS_BEFORE;
+                const today = getGuidebookToday();
+                // D-15 이전 잠금 · D-14~행사 종료일 자동 개방 · 종료 다음날부터 재잠금
+                if (ymdDiffDays(EVENT_START_DATE, today) > UNLOCK_DAYS_BEFORE) return true;
+                if (today > EVENT_END_DATE) return true;
+                return false;
             }
             function checkLockCondition() {
-                const unlocked = localStorage.getItem(STORAGE_KEY) === "true";
+                const today = getGuidebookToday();
+                const unlocked = localStorage.getItem(unlockStorageKey(today)) === "true";
                 if (shouldRequirePassword() && !unlocked) {
                     setLockVisible(true);
                     const input = document.getElementById("lock-password-input");
@@ -1366,7 +1401,7 @@
                 const errorMsg = document.getElementById("lock-error-msg");
                 const inputVal = (inputEl?.value || "").trim();
                 if (VALID_PASSWORDS.includes(inputVal)) {
-                    localStorage.setItem(STORAGE_KEY, "true");
+                    localStorage.setItem(unlockStorageKey(getGuidebookToday()), "true");
                     if (errorMsg) errorMsg.classList.add("hidden");
                     setLockVisible(false);
                 } else {
